@@ -59,11 +59,15 @@ function getDocCompanions(docID) {
 function getCompDoctors(compID) {
     var docList = []
     var companion = getCompanion(compID)
-    // loop through each doctor
-    for (var docID of companion.doctors) {
-        let doc = getDoctor(docID)
-        docList.push(doc)
+
+    if (companion.doctors){
+        // loop through each doctor
+        for (var docID of companion.doctors) {
+            let doc = getDoctor(docID)
+            docList.push(doc)
+        }
     }
+
     return docList
 }
 
@@ -74,21 +78,21 @@ router.route("/doctors")
     })
     .post((req, res) => {
         console.log("POST /doctors");
-
+        console.log(req.body)
         // check if sufficient data
-        if ((!req.body.name) || (!req.body.seasons)) {
-            console.log('missing')
+        if ((!req.body["name"]) || (!req.body["seasons"])) {
             res.status(500).send({
                 message: `Data missing.`
             });
         }
 
         var doctor = {
-            "_id": String(Math.random()),
+            "_id": String(Date.now()),
             "name": req.body.name,
             "seasons": req.body.seasons
         }
         data.doctors.push(doctor);
+        console.log(doctor)
         res.status(201).send(doctor);
 
     });
@@ -111,7 +115,16 @@ router.route("/doctors/:id")
     })
     .patch((req, res) => {
         console.log(`PATCH /doctors/${req.params.id}`);
-        res.status(501).send();
+        const updates = Object.keys(req.body)
+
+        for (var doctor of data.doctors){
+            if (doctor._id == req.params.id){
+                updates.forEach((update) => {
+                    doctor[update] = req.body[update]
+                })
+                res.status(200).send(doctor);
+            }
+        }
     })
     .delete((req, res) => {
         console.log(`DELETE /doctors/${req.params.id}`);
@@ -126,7 +139,7 @@ router.route("/doctors/:id")
             }
             ind++;
         }
-        console.log(data.doctors.length)
+        done()
     });
 
 router.route("/doctors/:id/companions")
@@ -171,7 +184,7 @@ router.route("/doctors/:id/goodparent")
                 res.status(200).send(false);
             }
         }
-
+        
         res.status(200).send(true);
     });
 
@@ -234,7 +247,16 @@ router.route("/companions/:id")
     })
     .patch((req, res) => {
         console.log(`PATCH /companions/${req.params.id}`);
-        res.status(501).send();
+        const updates = Object.keys(req.body)
+
+        for (var companion of data.companions){
+            if (companion._id == req.params.id){
+                updates.forEach((update) => {
+                    companion[update] = req.body[update]
+                })
+                res.status(200).send(companion);
+            }
+        }
     })
     .delete((req, res) => {
         console.log(`DELETE /companions/${req.params.id}`);
@@ -282,6 +304,7 @@ router.route("/companions/:id/friends")
                 friendList.push(friend)
             }
         }
+        console.log(friendList)
         res.status(200).send(friendList);
     });
 
