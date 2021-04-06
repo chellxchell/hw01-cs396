@@ -78,23 +78,24 @@ router.route("/doctors")
     })
     .post((req, res) => {
         console.log("POST /doctors");
-        console.log(req.body)
+        // res.status(501).send();
+
         // check if sufficient data
         if ((!req.body["name"]) || (!req.body["seasons"])) {
             res.status(500).send({
+                request: req.body,
                 message: `Data missing.`
             });
+            return
         }
 
         var doctor = {
-            "_id": String(Date.now()),
-            "name": req.body.name,
-            "seasons": req.body.seasons
+            _id: 'd'+String(data.doctors.length + 1),
+            name: req.body.name,
+            seasons: req.body.seasons
         }
         data.doctors.push(doctor);
-        console.log(doctor)
         res.status(201).send(doctor);
-
     });
 
 router.route("/doctors/:id")
@@ -129,17 +130,16 @@ router.route("/doctors/:id")
     .delete((req, res) => {
         console.log(`DELETE /doctors/${req.params.id}`);
 
-        console.log(data.doctors.length)
         var ind = 0;
         for (var doctor of data.doctors){
             // if we've found the doctor to delete
             if (doctor._id == req.params.id){
-                data.doctors.splice(ind,1)
-                break
+                data.doctors.splice(ind,1);
+                break;
             }
             ind++;
         }
-        done()
+        res.status(200).send(null);
     });
 
 router.route("/doctors/:id/companions")
@@ -195,23 +195,28 @@ router.route("/companions")
     })
     .post((req, res) => {
         console.log("POST /companions");
-        // check if sufficient data
 
-        if (!(req.body.name & req.body.character & req.body.doctors & req.body.seasons & req.body.alive)) {
+        // check if sufficient data
+        if ((!req.body["name"]) || (!req.body["seasons"]) || (!req.body["doctors"]) || (!req.body["seasons"]) || (!req.body["alive"])) {
             res.status(500).send({
+                request: req.body,
                 message: `Data missing.`
             });
+            return
         }
 
         var companion = {
-            "_id": String(Math.random()),
-            "name": req.body.name,
-            "character": req.body.character,
-            "doctors": req.body.doctors,
-            "seasons": req.body.seasons,
-            "alive": req.body.alive
+            _id: String(Date.now()),
+            name: req.body.name,
+            character: req.body.character,
+            doctors: req.body.doctors,
+            seasons: req.body.seasons,
+            alive: req.body.alive
         }
+        console.log(data.companions.length)
         data.companions.push(companion);
+        console.log(data.companions.length)
+
         res.status(201).send(companion);
     });
 
@@ -260,7 +265,17 @@ router.route("/companions/:id")
     })
     .delete((req, res) => {
         console.log(`DELETE /companions/${req.params.id}`);
-        res.status(501).send();
+        console.log(data.companions)
+        var ind = 0;
+        for (var companion of data.companions){
+            // if we've found the doctor to delete
+            if (companion._id == req.params.id){
+                data.companions.splice(ind,1);
+                break;
+            }
+            ind++;
+        }
+        res.status(200).send(null);
     });
 
 router.route("/companions/:id/doctors")
@@ -304,7 +319,6 @@ router.route("/companions/:id/friends")
                 friendList.push(friend)
             }
         }
-        console.log(friendList)
         res.status(200).send(friendList);
     });
 

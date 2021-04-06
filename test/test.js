@@ -37,12 +37,9 @@ describe("/doctors", () => {
                 .then(response => {
                     expect(response.status).to.equal(201);
                     const _id = response.data._id;
-                    expect(_id).to.be.string();
+                    expect(_id).to.be.string();                    
                     delete response.data._id;
                     expect(response.data).to.eql(utils.mockDoctor);
-                    // console.log(response.data === utils.mockDoctor)
-                    // console.log(response.data,typeof(response.data))
-                    // console.log(utils.mockDoctor,typeof(utils.mockDoctor))
                     // 2. make sure it exists:
                     axios.get(utils.route(`/doctors/${_id}`))
                         .then(response => {
@@ -447,7 +444,6 @@ describe("/companions/:id", () => {
     describe("DELETE", () => {
 
         it("should delete the specified companion from the data object", done => {
-            
             // create it:
             axios.post(utils.route("/companions"), utils.mockCompanion)
                 .then(response => {
@@ -458,11 +454,11 @@ describe("/companions/:id", () => {
                     axios.delete(utils.route(deleteURL))
                         .then(response => {
                             expect(response.status).to.equal(200);
-
                             // then make sure it's deleted:
                             axios.get(utils.route(`/companions/${_id}`))
                                 .then(response => {
                                     expect(response.status).to.equal(404);
+                                    console.log(response.status)
                                     done();
                                 })
                                 .catch(err => {
