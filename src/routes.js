@@ -104,15 +104,15 @@ router.route("/doctors/:id")
 
         var doctor = getDoctor(req.params.id)
 
-        if (doctor) {
-            res.status(200).send(doctor);
-        }
-        else {
+        if (!doctor & req.params.id != "favorites") {
             res.status(404).send({
                 message: `Doctor with id ${req.params.id} does not exist.`
             });
         }
 
+        res.status(200).send(doctor);
+
+        
     })
     .patch((req, res) => {
         console.log(`PATCH /doctors/${req.params.id}`);
@@ -213,9 +213,7 @@ router.route("/companions")
             seasons: req.body.seasons,
             alive: req.body.alive
         }
-        console.log(data.companions.length)
         data.companions.push(companion);
-        console.log(data.companions.length)
 
         res.status(201).send(companion);
     });
@@ -241,14 +239,13 @@ router.route("/companions/:id")
 
         var companion = getCompanion(req.params.id)
 
-        if (companion) {
-            res.status(200).send(companion);
-        }
-        else {
+        if (!companion & req.params.id != "favorites") {
             res.status(404).send({
                 message: `Companion with id ${req.params.id} does not exist.`
             });
         }
+
+        res.status(200).send(companion);
     })
     .patch((req, res) => {
         console.log(`PATCH /companions/${req.params.id}`);
@@ -265,7 +262,6 @@ router.route("/companions/:id")
     })
     .delete((req, res) => {
         console.log(`DELETE /companions/${req.params.id}`);
-        console.log(data.companions)
         var ind = 0;
         for (var companion of data.companions){
             // if we've found the doctor to delete
@@ -325,36 +321,91 @@ router.route("/companions/:id/friends")
 //////////////////
 // EXTRA CREDIT //
 //////////////////
+
+var faveDocs = [];
+var faveComps = [];
+
 router.route("/doctors/favorites")
     .get((req, res) => {
         console.log(`GET /doctors/favorites`);
-        res.status(501).send();
+        console.log(faveDocs);
+        res.status(200).send(faveDocs);
     })
     .post((req, res) => {
         console.log(`POST /doctors/favorites`);
-        res.status(501).send();
+        var doctor = getDoctor(req.body.id);
+
+        if (!doctor){
+            res.status(404).send({
+                message: `Doctor with id ${req.body.id} does not exist.`
+            });
+        }
+        faveDocs.push(doctor)
+        res.status(201).send(doctor);
     });
 
 router.route("/doctors/favorites/:id")
     .delete((req, res) => {
         console.log(`DELETE /doctors/favorites/:id`);
-        res.status(501).send();
+        
+        var doctor = getDoctor(req.params.id);
+
+        if (!doctor){
+            res.status(404).send({
+                message: `Doctor with id ${req.params.id} does not exist.`
+            });
+        }
+
+        ind = 0;
+        for (var doc in faveDocs){
+            if (doc._id == req.params.id){
+                faveDocs.splice(ind,1);
+                break;
+            }
+            ind++;
+        }
+        res.status(200).send(null);
     });
 
 router.route("/companions/favorites")
     .get((req, res) => {
         console.log(`GET /companions/favorites`);
-        res.status(501).send();
+        res.status(200).send(faveComps);
     })
     .post((req, res) => {
         console.log(`POST /companions/favorites`);
-        res.status(501).send();
+        var comp = getCompanion(req.body.id);
+
+        if (!comp){
+            res.status(404).send({
+                message: `Companion with id ${req.body.id} does not exist.`
+            });
+        }
+
+        faveComps.push(comp)
+        res.status(201).send(comp);
     })
 
 router.route("/companions/favorites/:id")
     .delete((req, res) => {
         console.log(`DELETE /companions/favorites/:id`);
-        res.status(501).send();
+        var companion = getCompanion(req.params.id);
+
+        if (!companion){
+            res.status(404).send({
+                message: `Companion with id ${req.params.id} does not exist.`
+            });
+        }
+
+        ind = 0;
+        for (var comp in faveComps){
+            if (comp._id == req.params.id){
+                faveComps.splice(ind,1);
+                break;
+            }
+            ind++;
+        }
+        res.status(200).send(null);
     });
 
 module.exports = router;
