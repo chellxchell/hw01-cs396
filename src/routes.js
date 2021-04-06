@@ -74,7 +74,23 @@ router.route("/doctors")
     })
     .post((req, res) => {
         console.log("POST /doctors");
-        res.status(501).send();
+
+        // check if sufficient data
+        if ((!req.body.name) || (!req.body.seasons)) {
+            console.log('missing')
+            res.status(500).send({
+                message: `Data missing.`
+            });
+        }
+
+        var doctor = {
+            "_id": String(Math.random()),
+            "name": req.body.name,
+            "seasons": req.body.seasons
+        }
+        data.doctors.push(doctor);
+        res.status(201).send(doctor);
+
     });
 
 router.route("/doctors/:id")
@@ -155,7 +171,24 @@ router.route("/companions")
     })
     .post((req, res) => {
         console.log("POST /companions");
-        res.status(501).send();
+        // check if sufficient data
+
+        if (!(req.body.name & req.body.character & req.body.doctors & req.body.seasons & req.body.alive)) {
+            res.status(500).send({
+                message: `Data missing.`
+            });
+        }
+
+        var companion = {
+            "_id": String(Math.random()),
+            "name": req.body.name,
+            "character": req.body.character,
+            "doctors": req.body.doctors,
+            "seasons": req.body.seasons,
+            "alive": req.body.alive
+        }
+        data.companions.push(companion);
+        res.status(201).send(companion);
     });
 
 router.route("/companions/crossover")
@@ -163,9 +196,9 @@ router.route("/companions/crossover")
         console.log(`GET /companions/crossover`);
 
         var companionList = []
-        for (var companion of data.companions){
+        for (var companion of data.companions) {
             // if they travelled with > 1 doctor
-            if (getCompDoctors(companion._id).length > 1){
+            if (getCompDoctors(companion._id).length > 1) {
                 companionList.push(companion)
             }
         }

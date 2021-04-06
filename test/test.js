@@ -48,7 +48,6 @@ describe("/doctors", () => {
                             expect(response.data._id).to.equal(_id);
                             delete response.data._id;
                             expect(response.data).to.eql(utils.mockDoctor);
-                            
                             // 3. now cleanup (delete doctor you just made):
                             axios.delete(utils.route(`/doctors/${_id}`))
                                 .then(response => {
