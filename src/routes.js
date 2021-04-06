@@ -115,7 +115,18 @@ router.route("/doctors/:id")
     })
     .delete((req, res) => {
         console.log(`DELETE /doctors/${req.params.id}`);
-        res.status(501).send();
+
+        console.log(data.doctors.length)
+        var ind = 0;
+        for (var doctor of data.doctors){
+            // if we've found the doctor to delete
+            if (doctor._id == req.params.id){
+                data.doctors.splice(ind,1)
+                break
+            }
+            ind++;
+        }
+        console.log(data.doctors.length)
     });
 
 router.route("/doctors/:id/companions")

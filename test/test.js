@@ -40,7 +40,9 @@ describe("/doctors", () => {
                     expect(_id).to.be.string();
                     delete response.data._id;
                     expect(response.data).to.eql(utils.mockDoctor);
-                    
+                    // console.log(response.data === utils.mockDoctor)
+                    // console.log(response.data,typeof(response.data))
+                    // console.log(utils.mockDoctor,typeof(utils.mockDoctor))
                     // 2. make sure it exists:
                     axios.get(utils.route(`/doctors/${_id}`))
                         .then(response => {
